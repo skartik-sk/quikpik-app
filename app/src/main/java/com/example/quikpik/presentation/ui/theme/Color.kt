@@ -1,4 +1,4 @@
-package com.example.quikpik.ui.theme
+package com.example.quikpik.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
