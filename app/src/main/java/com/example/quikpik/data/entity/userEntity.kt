@@ -1,5 +1,7 @@
 package com.example.quikpik.data.entity
 
+import com.example.quikpik.domain.model.UserModel
+
 
 data class userEntity(
     val id: String,
@@ -9,20 +11,34 @@ data class userEntity(
     val bio: String,
     val gender: String,
     val password: String,
-val post: List<PostReference>,
-val savedPosts: List<PostReference>,
-val followers: List<UserReference>,
-val following: List<UserReference>,
+    val post: List<String>,
+    val savedPosts: List<String>,
+    val followers: List<String>,
+    val following: List<String>,
     val createdAt: String,
     val resetToken: String
 )
 
-sealed class PostReference {
-    data class PostId(val id: String) : PostReference()
-    data class PostEntity(val post: postEntity) : PostReference()
+fun userEntity.toUserModel():UserModel{
+    return UserModel(
+        id=id,
+        profileImage=profileImage,
+        username=username,
+        email=email,
+        bio=bio,
+         gender= gender,
+     password= password,
+        post= post,
+        savedPosts= savedPosts,
+        followers= followers,
+        following= following,
+        createdAt= createdAt,
+        resetToken= resetToken
+
+
+
+
+    )
 }
 
-sealed class  UserReference {
-    data class UserId(val id: String) : UserReference()
-    data class UserEntity(val user: userEntity) : UserReference()
-}
+

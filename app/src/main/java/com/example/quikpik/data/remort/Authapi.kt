@@ -4,28 +4,31 @@ import com.example.quikpik.data.remort.Auth.ForgotBody
 import com.example.quikpik.data.remort.Auth.ForgotRes
 import com.example.quikpik.data.remort.Auth.LoginBody
 import com.example.quikpik.data.remort.Auth.LoginResponse
+import com.example.quikpik.data.remort.Auth.Logoutres
 import com.example.quikpik.data.remort.Auth.SignupBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface AuthApi {
-
-    @Headers("Content-Type: application/json")
     @POST("login")
-    suspend fun login(@Body loginBody: LoginBody): Call<LoginResponse>
+    @Headers("Content-Type: application/json")
+    suspend fun login(@Body loginBody: LoginBody): LoginResponse
 
     @POST("signup")
     @Headers("Content-Type: application/json")
-    suspend fun signup(@Body signupBody: SignupBody): Call<LoginResponse>
+    suspend fun signup(@Body signupBody: SignupBody): LoginResponse
 
     @GET("logout")
-    suspend fun logout(): String
+    @Headers("Content-Type: application/json")
+    suspend fun logout(@Header("Cookie") cookie:String): Logoutres
 
     @POST("forgotPassword")
-    suspend fun forgotPassword(@Body forgotBody: ForgotBody): Call<ForgotRes>
+    @Headers("Content-Type: application/json")
+    suspend fun forgotPassword(@Body forgotBody: ForgotBody): ForgotRes
 
     @POST("resetPassword/:id/:token")
     suspend fun resetPassword(): String
