@@ -1,4 +1,4 @@
-package com.example.quikpik.presentation.screens.login
+package com.example.quikpik.presentation.feature.auth.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

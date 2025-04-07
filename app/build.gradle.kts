@@ -90,8 +90,8 @@ dependencies {
     // ViewModel utilities for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-
-
+    //iconsw
+    implementation("br.com.devsrsouza.compose.icons.android:line-awesome:1.0.0")
 
 }
 

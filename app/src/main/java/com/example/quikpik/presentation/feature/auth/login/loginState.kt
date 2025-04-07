@@ -1,4 +1,4 @@
-package com.example.quikpik.presentation.screens.login
+package com.example.quikpik.presentation.feature.auth.login
 
 
 data class LoginState(
