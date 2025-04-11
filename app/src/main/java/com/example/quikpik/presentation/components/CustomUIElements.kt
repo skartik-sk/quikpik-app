@@ -22,12 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 
 @Composable
 fun CustomToast(
     message: String,
-    isError: Boolean,
+    isError: Boolean = false,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
@@ -65,6 +66,10 @@ fun CustomToast(
             )
         }
     }
+    LaunchedEffect(Unit) {
+        delay(2000)
+        onDismiss()
+    }
 }
 @Composable
 fun CustomLoading(modifier: Modifier = Modifier) {
@@ -74,7 +79,7 @@ fun CustomLoading(modifier: Modifier = Modifier) {
             .fillMaxHeight()
             .padding(16.dp)
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.inverseSurface,
                 shape = MaterialTheme.shapes.medium
             )
 

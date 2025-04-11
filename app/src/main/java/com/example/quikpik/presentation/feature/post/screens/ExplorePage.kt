@@ -1,4 +1,4 @@
-package com.example.quikpik.presentation.feature.post.Screens
+package com.example.quikpik.presentation.feature.post.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text

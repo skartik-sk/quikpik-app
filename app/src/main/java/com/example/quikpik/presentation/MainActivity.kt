@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
             QuikPikTheme {
 
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = Screen.Login.route) {
+                    NavHost(navController = navController, startDestination = Screen.Login.route,) {
                         composable(Screen.Login.route) {
                             Login(navController = navController)
                         }

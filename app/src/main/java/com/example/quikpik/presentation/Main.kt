@@ -12,8 +12,8 @@ import com.example.quikpik.presentation.feature.auth.login.Login
 import com.example.quikpik.presentation.feature.auth.signup.Signup
 import com.example.quikpik.presentation.feature.message.MessageScreen
 import com.example.quikpik.presentation.feature.navigation.BottomNavigationBar
-import com.example.quikpik.presentation.feature.post.Screens.ExploreScreen
-import com.example.quikpik.presentation.feature.post.Screens.HomeScreen
+import com.example.quikpik.presentation.feature.post.screens.ExploreScreen
+import com.example.quikpik.presentation.feature.post.screens.HomeScreen
 import com.example.quikpik.presentation.feature.profile.view.ProfileScreen
 
 @Composable
@@ -38,6 +38,9 @@ fun MainScreen(modifier: Modifier = Modifier,
                 ExploreScreen(navController= navController)
             }
             composable(Screen.Profile.route) { ProfileScreen(navController=navController) }
+            composable ( Screen.Login.route) {
+                Signup(navController=navController)
+            }
 
 
 
