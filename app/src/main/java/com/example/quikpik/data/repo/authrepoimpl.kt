@@ -24,7 +24,7 @@ class AuthRepoImpl @Inject constructor(
             val data = LoginBody(username, password)
             val response = authApi.login(data)
             response.token.let { tokenManager.saveToken(token = it) }
-            emit(Resource.Success(response.message))
+            emit(Resource.Success(data=response.message))
 
         } catch (e: HttpException) {
             // Handle HTTP errors (like 404)
