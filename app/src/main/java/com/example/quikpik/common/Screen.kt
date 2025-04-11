@@ -1,9 +1,16 @@
 package com.example.quikpik.common
 
-sealed class screen(val route :String) {
-    object Home : screen("home")
-    object Login : screen("login")
-    object Signup : screen("signup")
-    object ForgotPassword : screen("forgot_password")
+sealed class Screen(val route :String) {
+    object Home : Screen("home")
+    object Login : Screen("login")
+    object Signup : Screen("signup")
+    object ForgotPassword : Screen("forgot_password")
+    object Profile : Screen("profile")
+    object Settings : Screen("settings")
+    object Explore : Screen("explore")
+    object Post : Screen("post")
+    object Messages : Screen("messages")
+    object Main: Screen("main")
+
 
 }
