@@ -2,8 +2,11 @@ package com.example.quikpik.data.repo
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.example.quikpik.common.Resource
+import com.example.quikpik.data.entity.DetailPostEntity1
 import com.example.quikpik.data.entity.toDetailPostModel
+import com.example.quikpik.data.entity.toDetailPostModelList
 import com.example.quikpik.data.entity.toPostModel
 import com.example.quikpik.data.remort.PostApi
 import com.example.quikpik.data.remort.others.TokenManager
@@ -27,11 +30,12 @@ class PostRepoImpl @Inject constructor(
     private val tokenManager: TokenManager
 ) : PostRepo {
 
-    override fun getAllPosts(): Flow<Resource<List<PostModel>>> = flow {
+    override fun getAllPosts(): Flow<Resource<List<DetailPostModel>>> = flow {
         try {
             emit(Resource.Loading())
-            val response = postApi.getAllPosts().map { it.toPostModel() }
-            emit(Resource.Success(response))
+            val response = postApi.getAllPosts()
+            Log.d("Exploreimpl", "getPost: $response")
+            emit(Resource.Success(response.toDetailPostModelList()))
         } catch (e: HttpException) {
             emit(Resource.Error(parseErrorMessage(e)))
         } catch (e: Exception) {

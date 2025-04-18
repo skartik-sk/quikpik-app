@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -71,44 +73,52 @@ fun CustomToast(
         onDismiss()
     }
 }
+
 @Composable
 fun CustomLoading(modifier: Modifier = Modifier) {
     return Box(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(16.dp)
             .background(
-                color = MaterialTheme.colorScheme.inverseSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.medium
             )
 
             .padding(12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            CircularProgressIndicator()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
 
-            Text(
-                text = "Loading...",
-                color = MaterialTheme.colorScheme.inverseOnSurface,
-                style = MaterialTheme.typography.bodyMedium
-            )
+                Text(
+                    text = "Loading...",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
     }
 }
 
 
-@Preview
+@Preview(
+    showBackground = true,
+    showSystemUi = true
+)
 @Composable
 private fun previews() {
-    CustomToast(
-        message = "This is a custom toast message",
-        isError = false,
-        modifier = Modifier.padding(16.dp),
-        onDismiss = {}
-    )
+    CustomLoading()
 
 }

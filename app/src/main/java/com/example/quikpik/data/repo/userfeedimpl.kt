@@ -1,6 +1,7 @@
 package com.example.quikpik.data.repo
+import android.util.Log
 import com.example.quikpik.common.Resource
-import com.example.quikpik.data.entity.toDetailPostModel
+import com.example.quikpik.data.entity.toDetailPostModelList
 import com.example.quikpik.data.remort.AuthApi
 import com.example.quikpik.data.remort.UserFeedApi
 import com.example.quikpik.domain.model.DetailPostModel
@@ -14,11 +15,12 @@ import javax.inject.Inject
 class Userfeedimpl@Inject  constructor(
     private val userFeedApi: UserFeedApi
 ): UserFeedRepo {
- override fun getPost(): Flow<Resource<DetailPostModel>> = flow {
+ override fun getPost(): Flow<Resource<List<DetailPostModel>>> = flow {
      try {
          emit(Resource.Loading())
-         val response = userFeedApi.getPost().toDetailPostModel()
-         emit(Resource.Success(response))
+         val response = userFeedApi.getPost()
+         Log.d("Userfeedimpl", "getPost: $response")
+         emit(Resource.Success(response.toDetailPostModelList()))
      } catch (e: HttpException) {
          emit(Resource.Error(parseErrorMessage(e)))
      } catch (e: Exception) {

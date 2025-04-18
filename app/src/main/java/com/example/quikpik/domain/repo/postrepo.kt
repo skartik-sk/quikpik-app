@@ -7,7 +7,7 @@ import com.example.quikpik.domain.model.DetailPostModel
 import kotlinx.coroutines.flow.Flow
 
 interface PostRepo {
-    fun getAllPosts(): Flow<Resource<List<PostModel>>>
+    fun getAllPosts(): Flow<Resource<List<DetailPostModel>>>
     fun getUserPosts(): Flow<Resource<List<PostModel>>>
     fun getSavedPosts(): Flow<Resource<List<PostModel>>>
     fun getPostById(postId: String): Flow<Resource<DetailPostModel>>

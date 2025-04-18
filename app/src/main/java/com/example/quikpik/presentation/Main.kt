@@ -1,5 +1,6 @@
 package com.example.quikpik.presentation
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,9 +26,13 @@ fun MainScreen(modifier: Modifier = Modifier,
     // For example:
     // BottomNavigationBar(bottomNavController = navController)
 
-    Scaffold(bottomBar = { BottomNavigationBar(navController) }) {
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController) }
+    ) {
+        // Add padding to the content based on the bottom bar height
         val padding = it
-        NavHost(navController = navController, startDestination = Screen.Home.route) {
+        NavHost(navController = navController, startDestination = Screen.Home.route,
+            modifier = Modifier.padding(padding)) {
             composable(Screen.Home.route) {
                 HomeScreen(navController = navController)
             }

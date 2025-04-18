@@ -5,7 +5,7 @@ import com.example.quikpik.data.entity.likeEntity
 data class DetailPostModel(
     val id: String,
     val image: String,
-    val comments: List<commentModel>,
+    val comments: List<commentModel>? = emptyList(),
     val caption: String,
     val likes: List<String>,
     val createdBy: createdBy,

@@ -1,16 +1,37 @@
 package com.example.quikpik.presentation.feature.post.components
 
 import android.R.attr.contentDescription
+import android.R.attr.onClick
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Send
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.Send
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.twotone.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,14 +45,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.compose.AsyncImagePainter.State.Empty.painter
+import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
+import coil3.request.ImageRequest
 import com.example.quikpik.R
-import com.example.quikpik.domain.model.PostModel
+import com.example.quikpik.domain.model.DetailPostModel
+import com.example.quikpik.domain.model.createdBy
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Composable
-fun PostCard(post: PostModel, onLikeClick: () -> Unit, onCommentClick: () -> Unit) {
+fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,32 +75,43 @@ fun PostCard(post: PostModel, onLikeClick: () -> Unit, onCommentClick: () -> Uni
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(model = post.image),
+//            Log.d("PostCard", "Profile Image URL: ${post.createdBy.profileImage}")
+           AsyncImage(model =  post.createdBy.profileImage,
                 contentDescription = "Profile Image",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(text = post.createdBy, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                Text(text = "New Delhi, India", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More Options")
-        }
+               modifier = Modifier.size(40.dp)
+                    .clip(CircleShape),
+                )
 
+//
+            Spacer(modifier = Modifier.width(8.dp))
+            Row (horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+                Text(
+                    text = post.createdBy.username,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = onLikeClick) {
+
+            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More Options")
+                }
+        }
+        }
+            Log.d("PostCard", "Profile Image URL: ${post.image}")
         // Post Image
-        Image(
-           painter= rememberAsyncImagePainter(model = post.image),
-            contentDescription = "Post Image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .clip(RoundedCornerShape(12.dp)),
-            contentScale = ContentScale.Crop
-        )
+            AsyncImage(model =  post.image,
+                contentDescription = " Image",
+                placeholder = painterResource(R.drawable.placeholder),
+                error = painterResource(R.drawable.error_image),
+               onError = {
+                    Log.e("PostCard", "Error loading image: ${it.result.throwable.message}")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
+            )
 
         // Actions
         Row(
@@ -81,23 +121,46 @@ fun PostCard(post: PostModel, onLikeClick: () -> Unit, onCommentClick: () -> Uni
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onLikeClick) {
-                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like")
+                Icon(imageVector = Icons.Outlined.ThumbUp, contentDescription = "Like",
+                    modifier = Modifier.size(20.dp)
+
+                )
+            }
+            IconButton(onClick = onLikeClick) {
+                Icon(painter =painterResource( R.drawable.bookmarkoutline),
+                    contentDescription = "Like",
+                    modifier = Modifier.size(20.dp)
+                    )
             }
             IconButton(onClick = onCommentClick) {
-                Icon(imageVector = Icons.Default.Send, contentDescription = "Comment")
+                Icon(imageVector = Icons.Outlined.Send, contentDescription = "Comment",
+                    modifier = Modifier.size(20.dp)
+                )
             }
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = { /* Bookmark action */ }) {
-                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Bookmark")
+                Icon(imageVector = Icons.Outlined.Star, contentDescription = "Bookmark",
+                    modifier = Modifier.size(20.dp))
+
             }
         }
 
         // Likes and Description
         Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+            var likesText = ""
+            if (post.likes.isNotEmpty()) {
+                if(post.likes.size > 1) {
+                    likesText = "Liked by ${post.likes[0]} and ${post.likes.size - 1} others "
+                } else {
+                    likesText = "${post.likes[0]} liked this"
+                }
+            } else {
+                likesText = "No Likes"
+            }
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Liked by Lucas and 903 others")
+                        append(likesText)
                     }
                 },
                 style = MaterialTheme.typography.bodySmall
@@ -107,22 +170,58 @@ fun PostCard(post: PostModel, onLikeClick: () -> Unit, onCommentClick: () -> Uni
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 2
             )
-            Text(text = "Wed, 26 January 2021", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            Text(
+                text = formatPostDate(post.createdAt),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
         }
     }
+}
+
+
+fun formatPostDate(createdAt: String): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+    val postDate = dateFormat.parse(createdAt)
+    val currentDate = Date()
+
+    postDate?.let {
+        val diffInMillis = currentDate.time - postDate.time
+        val diffInHours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
+
+        return when {
+            diffInHours < 24 -> "$diffInHours hours ago"
+            diffInHours < 48 -> "1 day ago"
+            diffInHours < 720 -> "${diffInHours / 24} days ago"
+            else -> {
+                val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                outputFormat.format(postDate)
+            }
+        }
+    }
+    return "Invalid date"
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PostCardPreview() {
+
     PostCard(
-        post = PostModel(
+        post = DetailPostModel(
             id = "1",
             image = "https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg",
             comments = emptyList(),
             caption = "Million Parrots in India Like a Family... (More)",
             likes = listOf("Lucas", "John", "Emma"),
-            createdBy = "cameron_will",
+            createdBy = createdBy(
+                id = "1",
+                profileImage = "https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg",
+                username = "Lucas",
+                bio = "Nature Lover",
+                followers = listOf("John", "Emma"),
+                following = listOf("Lucas", "John")
+            ),
             createdAt = "Wed, 26 January 2021"
         ),
         onLikeClick = {},

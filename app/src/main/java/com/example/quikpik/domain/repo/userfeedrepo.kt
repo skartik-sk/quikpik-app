@@ -15,7 +15,7 @@ interface UserFeedRepo {
 
 
 
-fun getPost(): Flow<Resource<DetailPostModel>>
+fun getPost(): Flow<Resource<List<DetailPostModel>>>
     fun getFollowers(): Flow<Resource<List<MiniProfile>>>
     fun follow(userId: String): Flow<Resource<String>>
     fun unfollow(userId: String): Flow<Resource<String>>

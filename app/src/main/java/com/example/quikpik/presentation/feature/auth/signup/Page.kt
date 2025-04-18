@@ -27,6 +27,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.quikpik.common.Screen
 import com.example.quikpik.presentation.components.CustomLoading
 import com.example.quikpik.presentation.components.CustomToast
 import com.example.quikpik.presentation.components.PrimaryButton
@@ -56,50 +58,59 @@ import compose.icons.lineawesomeicons.AsteriskSolid
 fun Signup(
     signupViewModel: SignupViewModel = hiltViewModel(),
     navController: NavHostController
-) {
-//    Log.d("Login", "Login: "+ loginViewModel.state.value)
+) { 
+    val loginState = signupViewModel.state.collectAsState().value
+    Log.d("Login", "Login: $loginState")
     var showToast = remember { mutableStateOf(false) }
-    if (signupViewModel.state.value.isLoading){
-       return  CustomLoading()
+
+    if (loginState.isLoading) {
+        return CustomLoading()
     }
-    val email = remember { mutableStateOf("") }
+
+
     val username = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
+
+
+
+
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth(1f).fillMaxHeight()
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .fillMaxHeight()
     ) {
-        PrimaryTextField(Icons.Default.Email, "Email", email);
-        PrimaryTextField(Icons.Default.Person, "Username", username);
-        Column (
+        PrimaryTextField(Icons.Default.Person, "Username", username)
+        Column(
             horizontalAlignment = Alignment.End
         ) {
 
-        PrimaryTextField(LineAwesomeIcons.AsteriskSolid, "Password", password)
-
+            PrimaryTextField(LineAwesomeIcons.AsteriskSolid, "Password", password)
         }
         Spacer(modifier = Modifier.size(10.dp))
-Row {
+        Row {
 
-    PrimaryButton ("Login")
-       {
+            PrimaryButton("Signup")
+            {
 
-            signupViewModel.Signup(username.value, password.value, email.value)
+                signupViewModel.Signup(username.value,email.value, password.value)
 
+            }
 
         }
-
-}
         Spacer(modifier = Modifier.size(5.dp))
-
-
         Spacer(modifier = Modifier.size(16.dp))
 
         Text(
-            modifier = Modifier.padding(16.dp).clickable(true, onClick = {
-                navController.navigate("login")
-            }),
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable(true, onClick = {
+                    navController.navigate(Screen.Login.route)
+                    signupViewModel.clearState()
+                }),
             color = Color.Black,
             text = buildAnnotatedString {
                 withStyle(
@@ -120,32 +131,39 @@ Row {
         )
 
 
+        if (
+            loginState.error.isNotEmpty()
+        ) {
+            showToast.value = true
+            if (showToast.value) CustomToast(
+                loginState.error,
+                true,
+                onDismiss = { showToast.value = false })
+        } else if (
+            loginState.message.isNotEmpty()
+        ) {
+            showToast.value = true
+            if (showToast.value) CustomToast(
+                "Login Success",
+                false,
+                onDismiss = { showToast.value = false })
+            navController.navigate(Screen.Main.route)
+            signupViewModel.clearState()
+        }
+    }
 
-    }
-    if(
-        signupViewModel.state.value.error != ""
-    ) {
-        showToast.value = true
-
-        CustomToast(signupViewModel.state.value.error,true, onDismiss = {showToast.value= false})
-    }
-    else if(
-        signupViewModel.state.value.message != ""
-    ) {
-showToast.value=true
-        CustomToast("Login Success",false, onDismiss = {showToast.value= false})
-    }
 }
 
 
-@Preview(showBackground = true, showSystemUi = true,
+@Preview(
+    showBackground = true, showSystemUi = true,
     backgroundColor = 0xFF000000
 )
 @Composable
 private fun PreLogin() {
-    QuikPikTheme{
+    QuikPikTheme {
 
-    //Signup()
+        //Signup()
     }
 }
 
