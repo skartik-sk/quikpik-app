@@ -1,9 +1,15 @@
 package com.example.quikpik.presentation.feature.navigation
 
+import android.R.attr.contentDescription
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.MailOutline
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.MailOutline
@@ -25,7 +31,9 @@ import com.example.quikpik.common.Screen
 
 data class BottomItem (
     val title: String,
-    val icon: ImageVector)
+    val icon: ImageVector,
+    val filled: ImageVector
+)
 
 @Composable
 fun BottomNavigationBar(
@@ -34,23 +42,28 @@ fun BottomNavigationBar(
     val items = listOf(
         BottomItem(
             title = "Home",
-            icon = Icons.Rounded.Home
+            icon = Icons.Outlined.Home,
+            filled = Icons.Rounded.Home
         ),
         BottomItem(
             title = "Message",
-            icon = Icons.Rounded.MailOutline
+            icon = Icons.Outlined.MailOutline,
+            filled =Icons.Rounded.MailOutline
         ),
         BottomItem(
             title = "Post",
-            icon = Icons.Rounded.Add
+            icon = Icons.Outlined.Add,
+            filled = Icons.Rounded.Add
         ),
         BottomItem(
             title = "Explore",
-            icon = Icons.Rounded.Search
+            icon = Icons.Outlined.Search,
+            filled = Icons.Rounded.Search
         ),
         BottomItem(
             title = "Profile",
-            icon = Icons.Rounded.Person
+            icon = Icons.Outlined.Person,
+            filled = Icons.Rounded.Person
         )
     )
 
@@ -98,7 +111,7 @@ fun BottomNavigationBar(
                     },
                     icon = {
                         Icon(
-                            imageVector = bottomItem.icon,
+                            imageVector = if(selected.intValue==index) bottomItem.filled else bottomItem.icon,
                             contentDescription = bottomItem.title,
                             tint = MaterialTheme.colorScheme.onBackground
                         )

@@ -7,10 +7,12 @@ import com.example.quikpik.common.Resource
 import com.example.quikpik.data.entity.DetailPostEntity1
 import com.example.quikpik.data.entity.toDetailPostModel
 import com.example.quikpik.data.entity.toDetailPostModelList
+import com.example.quikpik.data.entity.toDetialUserModel
 import com.example.quikpik.data.entity.toPostModel
 import com.example.quikpik.data.remort.PostApi
 import com.example.quikpik.data.remort.others.TokenManager
 import com.example.quikpik.domain.model.DetailPostModel
+import com.example.quikpik.domain.model.DetailUserModel
 import com.example.quikpik.domain.model.PostModel
 import com.example.quikpik.domain.repo.PostRepo
 import kotlinx.coroutines.flow.Flow
@@ -43,10 +45,10 @@ class PostRepoImpl @Inject constructor(
         }
     }
 
-    override fun getUserPosts(): Flow<Resource<List<PostModel>>> = flow {
+    override fun getUserPosts(): Flow<Resource<DetailUserModel>> = flow {
         try {
             emit(Resource.Loading())
-            val response = postApi.getUserPost().map { it.toPostModel() }
+            val response = postApi.getUserPost().toDetialUserModel()
             emit(Resource.Success(response))
         } catch (e: HttpException) {
             emit(Resource.Error(parseErrorMessage(e)))

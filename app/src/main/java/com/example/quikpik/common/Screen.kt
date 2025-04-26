@@ -11,6 +11,7 @@ sealed class Screen(val route :String) {
     object Post : Screen("post")
     object Messages : Screen("messages")
     object Main: Screen("main")
+    object EditScreen: Screen("edit_screen")
 
 
 }

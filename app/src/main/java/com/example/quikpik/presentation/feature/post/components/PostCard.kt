@@ -2,6 +2,7 @@ package com.example.quikpik.presentation.feature.post.components
 
 import android.R.attr.contentDescription
 import android.R.attr.onClick
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.ThumbUp
@@ -38,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -54,13 +57,22 @@ import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import com.example.quikpik.R
 import com.example.quikpik.domain.model.DetailPostModel
+import com.example.quikpik.domain.model.UserModel
 import com.example.quikpik.domain.model.createdBy
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () -> Unit) {
+fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () -> Unit,
+             userdata: UserModel) {
+    val sendIntent: Intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, "https://main--quikpikweb.netlify.app/Homepostview/${post.id}")
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,28 +132,33 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             IconButton(onClick = onLikeClick) {
-                Icon(imageVector = Icons.Outlined.ThumbUp, contentDescription = "Like",
+                Icon(imageVector = if(post.likes.contains(userdata.id)) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, contentDescription = "Like",
                     modifier = Modifier.size(20.dp)
 
                 )
             }
-            IconButton(onClick = onLikeClick) {
-                Icon(painter =painterResource( R.drawable.bookmarkoutline),
-                    contentDescription = "Like",
-                    modifier = Modifier.size(20.dp)
-                    )
-            }
             IconButton(onClick = onCommentClick) {
-                Icon(imageVector = Icons.Outlined.Send, contentDescription = "Comment",
+                Icon(imageVector = Icons.Outlined.Create, contentDescription = "comment",
+                    modifier = Modifier.size(20.dp))
+
+            }
+            IconButton(onClick =  {
+                context.startActivity(shareIntent)
+            }) {
+
+                Icon(imageVector = Icons.Outlined.Send, contentDescription = "share",
                     modifier = Modifier.size(20.dp)
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { /* Bookmark action */ }) {
-                Icon(imageVector = Icons.Outlined.Star, contentDescription = "Bookmark",
-                    modifier = Modifier.size(20.dp))
 
+            IconButton(onClick = onLikeClick) {
+                Icon(painter =painterResource( if(userdata.savedPosts.contains(post.id)) R.drawable.bookmarkfilled else R.drawable.bookmarkoutline  ),
+                    contentDescription = "Bookmark",
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
 
@@ -149,10 +166,10 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
         Column(modifier = Modifier.padding(horizontal = 8.dp)) {
             var likesText = ""
             if (post.likes.isNotEmpty()) {
-                if(post.likes.size > 1) {
-                    likesText = "Liked by ${post.likes[0]} and ${post.likes.size - 1} others "
+                if(post.likes.contains(userdata.id)) {
+                    likesText = "Liked by You and ${post.likes.size - 1} others "
                 } else {
-                    likesText = "${post.likes[0]} liked this"
+                    likesText = "Liked by ${post.likes.size} "
                 }
             } else {
                 likesText = "No Likes"
@@ -207,24 +224,25 @@ fun formatPostDate(createdAt: String): String {
 @Composable
 fun PostCardPreview() {
 
-    PostCard(
-        post = DetailPostModel(
-            id = "1",
-            image = "https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg",
-            comments = emptyList(),
-            caption = "Million Parrots in India Like a Family... (More)",
-            likes = listOf("Lucas", "John", "Emma"),
-            createdBy = createdBy(
-                id = "1",
-                profileImage = "https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg",
-                username = "Lucas",
-                bio = "Nature Lover",
-                followers = listOf("John", "Emma"),
-                following = listOf("Lucas", "John")
-            ),
-            createdAt = "Wed, 26 January 2021"
-        ),
-        onLikeClick = {},
-        onCommentClick = {}
-    )
+//    PostCard(
+//        post = DetailPostModel(
+//            id = "1",
+//            image = "https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg",
+//            comments = emptyList(),
+//            caption = "Million Parrots in India Like a Family... (More)",
+//            likes = listOf("Lucas", "John", "Emma"),
+//            createdBy = createdBy(
+//                id = "1",
+//                profileImage = "https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg",
+//                username = "Lucas",
+//                bio = "Nature Lover",
+//                followers = listOf("John", "Emma"),
+//                following = listOf("Lucas", "John")
+//            ),
+//            createdAt = "Wed, 26 January 2021"
+//        ),
+//        onLikeClick = {},
+//        onCommentClick = {},
+//        userdata =
+//    )
 }

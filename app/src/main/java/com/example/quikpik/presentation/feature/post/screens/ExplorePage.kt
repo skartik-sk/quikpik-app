@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.quikpik.presentation.common.MeViewmodle
 import com.example.quikpik.presentation.components.CustomLoading
 import com.example.quikpik.presentation.components.CustomToast
 import com.example.quikpik.presentation.feature.post.components.PostList
@@ -17,16 +18,22 @@ import com.example.quikpik.presentation.feature.post.components.PostList
 fun ExploreScreen(modifier: Modifier = Modifier,
                navController: NavHostController
                 , ExploreViewModel: ExploreViewModel = hiltViewModel()
+                  ,
+                  meViewmodel: MeViewmodle
 
 )  {
     val exploreState = ExploreViewModel.state.collectAsState().value;
+    val meState = meViewmodel.state.collectAsState().value
     Log.d("ExploreScreen", "ExploreScreen: $exploreState")
     if (exploreState.isLoading) {
         return CustomLoading()
     }
-    if (exploreState.postData.isNotEmpty()) {
-        return PostList(exploreState.postData) { }
+    if (exploreState.postData.isNotEmpty()&& meState.userData!=null  ) {
+        return PostList(exploreState.postData,userdata = meState.userData!!,
+            onPostClick = {}
+        )
     }
+
     if (exploreState.error.isNotEmpty()) {
         return CustomToast(exploreState.error,true) { }
     }

@@ -2,6 +2,7 @@ package com.example.quikpik.data.remort
 
 import com.example.quikpik.data.entity.DetailPostEntity
 import com.example.quikpik.data.entity.DetailPostEntity1
+import com.example.quikpik.data.entity.detailUserEntity
 import com.example.quikpik.data.entity.postEntity
 import com.example.quikpik.data.remort.Post.PostMessageResponse
 import okhttp3.MultipartBody
@@ -54,7 +55,7 @@ interface PostApi {
 
     @POST("post/getUserPosts")
     suspend fun getUserPost(
-    ): List<postEntity>
+    ): detailUserEntity
 
     @POST("post/getSavedPosts")
     suspend fun getSavedPosts(

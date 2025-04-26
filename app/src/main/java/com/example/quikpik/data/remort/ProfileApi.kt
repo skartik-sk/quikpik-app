@@ -13,15 +13,15 @@ import retrofit2.http.Part
 
 interface ProfileApi{
 
-    @GET("/profile")
+    @GET("/user/profile")
     suspend fun getUserProfile(): ProfileResponse
 
     @Multipart
-    @POST("/updateProfile")
+    @POST("/user/updateProfile")
     suspend fun updateUserProfile(@Part userphoto: MultipartBody.Part?,
                                   @Part("userData") userData: RequestBody
     ): ProfileResponse
 
-    @DELETE("/deleteProfile")
+    @DELETE("/user/deleteProfile")
     suspend fun deleteUserProfile(): DeleteProfileResponse
 }
