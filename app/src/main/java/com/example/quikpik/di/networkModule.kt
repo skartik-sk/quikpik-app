@@ -39,8 +39,8 @@ object NetworkModule {
         .create()
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit.Builder {
-        return Retrofit.Builder()
+    fun provideRetrofit(): Builder {
+        return Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
 
@@ -48,7 +48,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideAuthapi(retrofitBuilder :Retrofit.Builder):AuthApi{
+    fun provideAuthapi(retrofitBuilder : Builder):AuthApi{
         return retrofitBuilder.build().create(AuthApi::class.java)
     }
     @Singleton

@@ -105,7 +105,7 @@ class ProfileRepoImpl @Inject constructor(
     private fun parseErrorMessage(e: HttpException): String {
         val errorBody = e.response()?.errorBody()?.string()
         return try {
-            val jsonObject = org.json.JSONObject(errorBody ?: "")
+            val jsonObject = JSONObject(errorBody ?: "")
             jsonObject.optString("message", "Unknown error occurred")
         } catch (e: Exception) {
             errorBody ?: "Unknown error occurred"

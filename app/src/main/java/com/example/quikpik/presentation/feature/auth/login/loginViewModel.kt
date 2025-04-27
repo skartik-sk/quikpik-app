@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(val authUseCases: AuthUseCases):ViewMod
 
     fun logout(){
         viewModelScope.launch {
-            authUseCases.authLogout().collect(){
+            authUseCases.authLogout().collect {
                 when(it){
                     is Resource.Success -> {
                         _state.value = LoginState( message = it.data?:"Somthing went wrong")

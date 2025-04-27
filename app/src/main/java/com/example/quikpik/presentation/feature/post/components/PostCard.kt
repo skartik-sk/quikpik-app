@@ -1,12 +1,16 @@
 package com.example.quikpik.presentation.feature.post.components
 
-import android.R.attr.contentDescription
-import android.R.attr.onClick
 import android.content.Intent
 import android.util.Log
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,26 +22,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Send
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Send
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -48,23 +48,130 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter
-import coil3.compose.AsyncImagePainter.State.Empty.painter
-import coil3.compose.LocalPlatformContext
-import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.rememberConstraintsSizeResolver
-import coil3.request.ImageRequest
 import com.example.quikpik.R
 import com.example.quikpik.domain.model.DetailPostModel
 import com.example.quikpik.domain.model.UserModel
 import com.example.quikpik.domain.model.createdBy
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
+
 @Composable
-fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () -> Unit,
+fun UserProfileBox(
+    user: createdBy,
+    currentUser: UserModel,
+    onFollowClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isFollowing = currentUser.following.contains(user.id)
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = user.profileImage,
+                    contentDescription = "Profile image",
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = user.username,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = user.bio,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                }
+
+                if (currentUser.id != user.id) {
+                    androidx.compose.material3.Button(
+                        onClick = onFollowClick,
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = if (isFollowing)
+                                MaterialTheme.colorScheme.surfaceVariant
+                            else
+                                MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Text(
+                            text = if (isFollowing) "Following" else "Follow",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = user.followers.size.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Followers",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = user.following.size.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Following",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+
+
+            }
+        }
+    }
+}
+
+
+
+
+@Composable
+fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick: (String) -> Unit,   // Add this parameter
+             onBookmarkClick: (String) -> Unit,onPostClick:(String) -> Unit,
              userdata: UserModel) {
     val sendIntent: Intent = Intent().apply {
         action = Intent.ACTION_SEND
@@ -73,6 +180,8 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
     }
     val shareIntent = Intent.createChooser(sendIntent, null)
     val context = LocalContext.current
+    var showProfilePopup = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,6 +189,7 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
             .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
     ) {
+        var isLiked = remember { mutableStateOf(post.likes.contains(userdata.id)) }
         // Header
         Row(
             modifier = Modifier
@@ -90,8 +200,10 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
 //            Log.d("PostCard", "Profile Image URL: ${post.createdBy.profileImage}")
            AsyncImage(model =  post.createdBy.profileImage,
                 contentDescription = "Profile Image",
-               modifier = Modifier.size(40.dp)
-                    .clip(CircleShape),
+               modifier = Modifier
+                   .size(40.dp)
+                   .clip(CircleShape)
+               ,
                 )
 
 //
@@ -101,9 +213,16 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
                     text = post.createdBy.username,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable(
+                        onClick = {
+                            showProfilePopup.value = !showProfilePopup.value
+
+                            // Handle profile click
+                        }
+                    )
                 )
             Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = onLikeClick) {
+                IconButton(onClick = {}) {
 
             Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More Options")
                 }
@@ -121,7 +240,7 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(12.dp)).clickable(onClick = {onPostClick(post.id)}),
                 contentScale = ContentScale.Crop
             )
 
@@ -133,13 +252,21 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(onClick = onLikeClick) {
-                Icon(imageVector = if(post.likes.contains(userdata.id)) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, contentDescription = "Like",
-                    modifier = Modifier.size(20.dp)
+            IconButton(onClick = {
+                onLikeClick(post.id)
+                isLiked.value = !isLiked.value
+            }) {
+                Icon(imageVector = if(isLiked.value) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, contentDescription = "Like",
+                    modifier = Modifier.size(20.dp),
+                    tint = if(isLiked.value)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurface
+
 
                 )
             }
-            IconButton(onClick = onCommentClick) {
+            IconButton(onClick = { onCommentClick(post.id) }) {
                 Icon(imageVector = Icons.Outlined.Create, contentDescription = "comment",
                     modifier = Modifier.size(20.dp))
 
@@ -154,7 +281,7 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
             }
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(onClick = onLikeClick) {
+            IconButton(onClick = {onBookmarkClick(post.id)}) {
                 Icon(painter =painterResource( if(userdata.savedPosts.contains(post.id)) R.drawable.bookmarkfilled else R.drawable.bookmarkoutline  ),
                     contentDescription = "Bookmark",
                     modifier = Modifier.size(20.dp)
@@ -192,6 +319,36 @@ fun PostCard(post: DetailPostModel, onLikeClick: () -> Unit, onCommentClick: () 
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
+        }
+        AnimatedVisibility(
+            visible = showProfilePopup.value,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 0.dp)
+                    .align(Alignment.TopCenter as Alignment.Horizontal)
+                    .zIndex(1f)
+                    .clickable(enabled = false) {} // Prevent propagating clicks
+            ) {
+                // Show mini profile card
+                UserProfileBox(
+                    user = post.createdBy,
+                    currentUser = userdata,
+                    onFollowClick = {
+                        // Handle follow action
+
+                        showProfilePopup.value = false
+                    },
+                    modifier = Modifier
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                )
+    }
         }
     }
 }

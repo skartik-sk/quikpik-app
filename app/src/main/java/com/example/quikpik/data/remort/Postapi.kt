@@ -49,7 +49,7 @@ interface PostApi {
     @PUT("post/{id}/like")
     suspend fun likePost(@Path("id") postId: String): PostMessageResponse
 
-    @POST("{ids}/saveAPost")
+    @POST("post/{ids}/saveAPost")
     suspend fun savePost(@Path("ids") postId: String): PostMessageResponse
 
 

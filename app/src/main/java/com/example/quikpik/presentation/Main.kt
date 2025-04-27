@@ -15,6 +15,7 @@ import com.example.quikpik.presentation.common.MeViewmodle
 import com.example.quikpik.presentation.feature.auth.signup.Signup
 import com.example.quikpik.presentation.feature.message.MessageScreen
 import com.example.quikpik.presentation.feature.navigation.BottomNavigationBar
+import com.example.quikpik.presentation.feature.post.components.DetailsPostScreen
 import com.example.quikpik.presentation.feature.post.screens.ExploreScreen
 import com.example.quikpik.presentation.feature.post.screens.HomeScreen
 import com.example.quikpik.presentation.feature.profile.screens.ProfileScreen
@@ -31,7 +32,7 @@ fun MainScreen(modifier: Modifier = Modifier,
     // BottomNavigationBar(bottomNavController = navController)
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
+                bottomBar = { BottomNavigationBar(navController) }
     ) {
         // Add padding to the content based on the bottom bar height
         val padding = it
@@ -59,8 +60,15 @@ fun MainScreen(modifier: Modifier = Modifier,
                 navController=navController,
                 meViewmodel = meViewmodel
             ) }
-            composable ( Screen.Login.route) {
-                Signup(navController=navController)
+            composable ( Screen.PostDetails.route + "/{postId}") {
+                val postId = it.arguments?.getString("postId")
+                if (postId != null) {
+                    DetailsPostScreen(
+                        navController = navController,
+                        meViewModel = meViewmodel,
+                    )
+                }
+
             }
 
 

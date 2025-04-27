@@ -30,6 +30,69 @@ class ProfileViewModel @Inject constructor(val postUseCases: PostUseCases) : Vie
         _state.value = ProfileState()
     }
 
+    fun likePost(postId: String) {
+        viewModelScope.launch {
+
+            try {
+                // Optimistic update
+                val post = _state.value.userData?.post ?: return@launch
+                val currentLikes =
+                    post.find { it.id == postId }?.likes?.toMutableList() ?: mutableListOf()
+
+                if (currentLikes.contains(postId)) {
+                    currentLikes.remove(postId)
+                } else {
+                    currentLikes.add(postId)
+                }
+
+                // Update state immediately for UI
+                _state.update { currentState ->
+
+                    val updatedPosts = currentState.userData?.post?.map { post ->
+                        if (post.id == postId) {
+                            post.copy(likes = currentLikes)
+                        } else {
+                            post
+                        }
+                    }
+                    currentState.copy(userData = currentState.userData?.copy(post = updatedPosts?: emptyList()))
+                }
+
+                // Make API call
+                postUseCases.likePost(postId).collectLatest { res ->
+                    when (res) {
+                        is Resource.Success -> {
+
+                        }
+
+                        is Resource.Error -> {
+                            fetchFeed()
+                            _state.update {
+                                it.copy(
+                                    error = res.message ?: "Failed to update like"
+                                )
+                            }
+                        }
+
+                        is Resource.Loading -> {
+
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                // Revert on exception
+                fetchFeed()
+                _state.update {
+                    it.copy(
+                        error = e.message ?: "An unexpected error occurred"
+                    )
+                }
+            }
+
+
+        }
+    }
     fun fetchFeed() {
         viewModelScope.launch {
             _state.update {

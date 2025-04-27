@@ -67,6 +67,11 @@ fun Login(
             .fillMaxWidth(1f)
             .fillMaxHeight()
     ) {
+        Text("Login",
+           style  = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.size(16.dp))
         PrimaryTextField(Icons.Default.Person, "Username", username)
         Column(
             horizontalAlignment = Alignment.End
@@ -75,7 +80,7 @@ fun Login(
             PrimaryTextField(LineAwesomeIcons.AsteriskSolid, "Password", password)
             Text(
                 text = "Forgot Password?",
-                color = MaterialTheme.colorScheme.inverseOnSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         Spacer(modifier = Modifier.size(10.dp))
@@ -102,7 +107,7 @@ fun Login(
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = MaterialTheme.colorScheme.inverseOnSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
                     append("Don't have an account?")

@@ -83,13 +83,18 @@ fun Signup(
             .fillMaxWidth(1f)
             .fillMaxHeight()
     ) {
+        Text("Signup",
+            style  = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.size(16.dp))
+        PrimaryTextField(Icons.Default.Person, "Email", email)
+
         PrimaryTextField(Icons.Default.Person, "Username", username)
-        Column(
-            horizontalAlignment = Alignment.End
-        ) {
+
 
             PrimaryTextField(LineAwesomeIcons.AsteriskSolid, "Password", password)
-        }
+
         Spacer(modifier = Modifier.size(10.dp))
         Row {
 
@@ -115,7 +120,7 @@ fun Signup(
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = MaterialTheme.colorScheme.inverseOnSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
                     append("Already have an account?")
@@ -139,8 +144,10 @@ fun Signup(
                 loginState.error,
                 true,
                 onDismiss = { showToast.value = false })
+            signupViewModel.clearState()
         } else if (
             loginState.message.isNotEmpty()
+
         ) {
             showToast.value = true
             if (showToast.value) CustomToast(

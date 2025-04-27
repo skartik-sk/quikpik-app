@@ -9,15 +9,23 @@ import com.example.quikpik.domain.model.UserModel
 
 // feature/post/components/PostList.kt
 @Composable
-fun PostList(posts: List<DetailPostModel>, onPostClick: (DetailPostModel) -> Unit,
-             userdata: UserModel
+fun PostList(posts: List<DetailPostModel>, onPostClick: (String) -> Unit,
+             userdata: UserModel,
+             onLikeClick: (String) -> Unit,   // Add this parameter
+             onBookmarkClick: (String) -> Unit
              ) {
     LazyColumn {
         items(posts.size) { post ->
             PostCard(posts[post],
-                onLikeClick = { /* handle like */ },
+
                 onCommentClick = { /* handle comment */ },
-                userdata= userdata
+                userdata= userdata,
+                onLikeClick = onLikeClick,
+                onBookmarkClick = onBookmarkClick,
+                onPostClick = onPostClick  // Pass the post to the onPostClick callback
+
+
+
             )
         }
     }
