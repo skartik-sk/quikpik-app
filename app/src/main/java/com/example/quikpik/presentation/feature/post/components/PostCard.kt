@@ -54,6 +54,8 @@ import com.example.quikpik.R
 import com.example.quikpik.domain.model.DetailPostModel
 import com.example.quikpik.domain.model.UserModel
 import com.example.quikpik.domain.model.createdBy
+import com.example.quikpik.presentation.components.ButtonType
+import com.example.quikpik.presentation.components.PrimaryButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,7 +69,8 @@ fun UserProfileBox(
     currentUser: UserModel,
     onFollowClick: () -> Unit,
     modifier: Modifier = Modifier
-) {
+)
+{
     val isFollowing = currentUser.following.contains(user.id)
 
     Box(
@@ -160,19 +163,23 @@ fun UserProfileBox(
                 }
 
 
-
             }
         }
     }
 }
 
 
-
-
 @Composable
-fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick: (String) -> Unit,   // Add this parameter
-             onBookmarkClick: (String) -> Unit,onPostClick:(String) -> Unit,
-             userdata: UserModel) {
+fun PostCard(
+    post: DetailPostModel,
+    onCommentClick: (String) -> Unit,
+    onLikeClick: (String) -> Unit,   // Add this parameter
+    onBookmarkClick: (String) -> Unit,
+    onPostClick: (String) -> Unit,
+    userdata: UserModel,
+    onFollowClick: (String) -> Unit,
+    onUnFollowClick: (String) -> Unit,
+) {
     val sendIntent: Intent = Intent().apply {
         action = Intent.ACTION_SEND
         putExtra(Intent.EXTRA_TEXT, "https://main--quikpikweb.netlify.app/Homepostview/${post.id}")
@@ -181,7 +188,7 @@ fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick
     val shareIntent = Intent.createChooser(sendIntent, null)
     val context = LocalContext.current
     var showProfilePopup = remember { mutableStateOf(false) }
-
+    var isFollowing = remember { mutableStateOf(userdata.following.contains(post.createdBy.id)) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,17 +205,21 @@ fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick
             verticalAlignment = Alignment.CenterVertically
         ) {
 //            Log.d("PostCard", "Profile Image URL: ${post.createdBy.profileImage}")
-           AsyncImage(model =  post.createdBy.profileImage,
+            AsyncImage(
+                model = post.createdBy.profileImage,
                 contentDescription = "Profile Image",
-               modifier = Modifier
-                   .size(40.dp)
-                   .clip(CircleShape)
-               ,
-                )
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+            )
+
 
 //
             Spacer(modifier = Modifier.width(8.dp))
-            Row (horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = post.createdBy.username,
                     style = MaterialTheme.typography.bodyMedium,
@@ -221,28 +232,46 @@ fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick
                         }
                     )
                 )
-            Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = {}) {
+                Spacer(modifier = Modifier.weight(1f))
+                if (userdata.id != post.createdBy.id) {
+                    PrimaryButton(
+                        onclick = {
+                           if(isFollowing.value) onUnFollowClick(post.createdBy.id) else onFollowClick(post.createdBy.id)
+                            isFollowing.value = !isFollowing.value
+                                  },
+//                        modifier = Modifier.background(color = if (isFollowing) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primary),
+                        verient =
+                            when (isFollowing.value) {
 
-            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More Options")
+                                true -> ButtonType.SECONDARY
+                                false -> ButtonType.PRIMARY
+                            },
+                        text = if (isFollowing.value) "Following" else "Follow")
+
                 }
+//                IconButton(onClick = {}) {
+//
+//                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More Options")
+//                }
+            }
         }
-        }
-            Log.d("PostCard", "Profile Image URL: ${post.image}")
+        Log.d("PostCard", "Profile Image URL: ${post.image}")
         // Post Image
-            AsyncImage(model =  post.image,
-                contentDescription = " Image",
-                placeholder = painterResource(R.drawable.placeholder),
-                error = painterResource(R.drawable.error_image),
-               onError = {
-                    Log.e("PostCard", "Error loading image: ${it.result.throwable.message}")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .clip(RoundedCornerShape(12.dp)).clickable(onClick = {onPostClick(post.id)}),
-                contentScale = ContentScale.Crop
-            )
+        AsyncImage(
+            model = post.image,
+            contentDescription = " Image",
+            placeholder = painterResource(R.drawable.placeholder),
+            error = painterResource(R.drawable.error_image),
+            onError = {
+                Log.e("PostCard", "Error loading image: ${it.result.throwable.message}")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = { onPostClick(post.id) }),
+            contentScale = ContentScale.Crop
+        )
 
         // Actions
         Row(
@@ -256,9 +285,11 @@ fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick
                 onLikeClick(post.id)
                 isLiked.value = !isLiked.value
             }) {
-                Icon(imageVector = if(isLiked.value) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, contentDescription = "Like",
+                Icon(
+                    imageVector = if (isLiked.value) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                    contentDescription = "Like",
                     modifier = Modifier.size(20.dp),
-                    tint = if(isLiked.value)
+                    tint = if (isLiked.value)
                         MaterialTheme.colorScheme.primary
                     else
                         MaterialTheme.colorScheme.onSurface
@@ -266,23 +297,28 @@ fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick
 
                 )
             }
-            IconButton(onClick = { onCommentClick(post.id) }) {
-                Icon(imageVector = Icons.Outlined.Create, contentDescription = "comment",
-                    modifier = Modifier.size(20.dp))
+            IconButton(onClick = { onPostClick(post.id)  }) {
+                Icon(
+                    imageVector = Icons.Outlined.Create, contentDescription = "comment",
+                    modifier = Modifier.size(20.dp)
+                )
 
             }
-            IconButton(onClick =  {
+
+            IconButton(onClick = {
                 context.startActivity(shareIntent)
             }) {
 
-                Icon(imageVector = Icons.Outlined.Send, contentDescription = "share",
+                Icon(
+                    imageVector = Icons.Outlined.Send, contentDescription = "share",
                     modifier = Modifier.size(20.dp)
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(onClick = {onBookmarkClick(post.id)}) {
-                Icon(painter =painterResource( if(userdata.savedPosts.contains(post.id)) R.drawable.bookmarkfilled else R.drawable.bookmarkoutline  ),
+            IconButton(onClick = { onBookmarkClick(post.id) }) {
+                Icon(
+                    painter = painterResource(if (userdata.savedPosts.contains(post.id)) R.drawable.bookmarkfilled else R.drawable.bookmarkoutline),
                     contentDescription = "Bookmark",
                     modifier = Modifier.size(20.dp)
                 )
@@ -293,7 +329,10 @@ fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick
         Column(modifier = Modifier.padding(horizontal = 8.dp)) {
             var likesText = ""
             if (post.likes.isNotEmpty()) {
-                if(post.likes.contains(userdata.id)) {
+                if (post.likes.contains(userdata.id)) {
+                    if(post.likes.size > 1)
+                        likesText = "Liked by You and ${post.likes.size - 1} others "
+                    else
                     likesText = "Liked by You and ${post.likes.size - 1} others "
                 } else {
                     likesText = "Liked by ${post.likes.size} "
@@ -320,39 +359,10 @@ fun PostCard(post: DetailPostModel, onCommentClick: (String) -> Unit,onLikeClick
                 color = Color.Gray
             )
         }
-        AnimatedVisibility(
-            visible = showProfilePopup.value,
-            enter = fadeIn() + slideInVertically(),
-            exit = fadeOut() + slideOutVertically()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 0.dp)
-                    .align(Alignment.TopCenter as Alignment.Horizontal)
-                    .zIndex(1f)
-                    .clickable(enabled = false) {} // Prevent propagating clicks
-            ) {
-                // Show mini profile card
-                UserProfileBox(
-                    user = post.createdBy,
-                    currentUser = userdata,
-                    onFollowClick = {
-                        // Handle follow action
 
-                        showProfilePopup.value = false
-                    },
-                    modifier = Modifier
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                )
-    }
-        }
+
     }
 }
-
 
 fun formatPostDate(createdAt: String): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())

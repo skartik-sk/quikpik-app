@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quikpik.common.Resource
 import com.example.quikpik.domain.model.DetailPostModel
+import com.example.quikpik.domain.model.DetailPostModel1
 import com.example.quikpik.domain.model.commentModel
+import com.example.quikpik.domain.model.commentModel1
 import com.example.quikpik.domain.usecase.PostUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -138,8 +140,8 @@ class PostDetailsViewModel @Inject constructor(
 }
 
 data class PostDetailsState(
-    val post: DetailPostModel? = null,
-    val comments: List<commentModel> = emptyList(),
+    val post: DetailPostModel1? = null,
+    val comments: List<commentModel1> = emptyList(),
     val isLoading: Boolean = false,
     val error: String = "",
     val isAddingComment: Boolean = false,

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +38,7 @@ import com.example.quikpik.presentation.ui.theme.QuikPikTheme
 import com.example.quikpik.presentation.ui.theme.UserBlue
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.AsteriskSolid
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -51,7 +53,33 @@ fun Login(
     if (loginState.isLoading) {
         return CustomLoading()
     }
+// Replace the selected error handling code in Login page
+LaunchedEffect(loginState) {
+    when {
+        loginState.error.isNotEmpty() -> {
+            showToast.value = true
+            delay(3000) // Auto-dismiss after 3 seconds
+            loginViewModel.clearState()
+        }
+        loginState.message.isNotEmpty() -> {
+            showToast.value = true
+            delay(1500) // Show success message briefly
+            navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.Login.route) { inclusive = true }
+            }
+            loginViewModel.clearState()
+        }
+    }
+}
 
+// Display toast when needed
+if (showToast.value) {
+    CustomToast(
+        message = if (loginState.error.isNotEmpty()) loginState.error else "Login Success",
+        isError = loginState.error.isNotEmpty(),
+        onDismiss = { showToast.value = false }
+    )
+}
 
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -123,25 +151,7 @@ fun Login(
         )
 
 
-        if (
-            loginState.error.isNotEmpty()
-        ) {
-            showToast.value = true
-            if (showToast.value) CustomToast(
-                loginState.error,
-                true,
-                onDismiss = { showToast.value = false })
-        } else if (
-            loginState.message.isNotEmpty()
-        ) {
-            showToast.value = true
-            if (showToast.value) CustomToast(
-                "Login Success",
-                false,
-                onDismiss = { showToast.value = false })
-            navController.navigate(Screen.Main.route)
-            loginViewModel.clearState()
-        }
+
     }
 
 }

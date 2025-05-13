@@ -2,6 +2,18 @@ package com.example.quikpik.domain.model
 
 import com.example.quikpik.data.entity.likeEntity
 
+data class DetailPostModel1(
+    val id: String,
+    val image: String,
+    val comments: List<commentModel1>? = emptyList(),
+    val caption: String,
+    val likes: List<String>,
+    val createdBy: createdBy,
+    val createdAt: String
+)
+
+
+
 data class DetailPostModel(
     val id: String,
     val image: String,

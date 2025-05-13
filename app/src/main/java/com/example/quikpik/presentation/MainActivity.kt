@@ -32,8 +32,8 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             QuikPikTheme {
-Scaffold(){padding->
-    val paddingvalue = padding
+Scaffold { padding->
+    padding
 
 
 

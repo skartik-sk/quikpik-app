@@ -14,6 +14,10 @@ data class commentModel(
     val comment: String,
     val commenter: String
 )
+data class commentModel1(
+    val comment: String,
+    val commenter: createdBy
+)
 
 
 

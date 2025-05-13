@@ -12,6 +12,7 @@ import com.example.quikpik.data.entity.toPostModel
 import com.example.quikpik.data.remort.PostApi
 import com.example.quikpik.data.remort.others.TokenManager
 import com.example.quikpik.domain.model.DetailPostModel
+import com.example.quikpik.domain.model.DetailPostModel1
 import com.example.quikpik.domain.model.DetailUserModel
 import com.example.quikpik.domain.model.PostModel
 import com.example.quikpik.domain.repo.PostRepo
@@ -69,7 +70,7 @@ class PostRepoImpl @Inject constructor(
         }
     }
 
-    override fun getPostById(postId: String): Flow<Resource<DetailPostModel>> = flow {
+    override fun getPostById(postId: String): Flow<Resource<DetailPostModel1>> = flow {
         try {
             emit(Resource.Loading())
             val response = postApi.getPostById(postId).toDetailPostModel()

@@ -1,6 +1,7 @@
 package com.example.quikpik.data.entity
 
 import com.example.quikpik.domain.model.DetailPostModel
+import com.example.quikpik.domain.model.DetailPostModel1
 
 data class DetailPostEntity1(
     val _id: String,
@@ -40,21 +41,22 @@ data class createdBy(
 )
 
 
-fun DetailPostEntity.toDetailPostModel(): DetailPostModel {
-    return DetailPostModel(
+fun DetailPostEntity.toDetailPostModel(): DetailPostModel1 {
+    return DetailPostModel1(
         id = _id,
         image = image,
         comments = comments.map {
-            com.example.quikpik.domain.model.commentModel(
+            com.example.quikpik.domain.model.commentModel1(
                 comment = it.comment,
-                commenter = com.example.quikpik.domain.model.createdBy(
+                commenter =
+                com.example.quikpik.domain.model.createdBy(
                     id = it.commenter._id,
                     profileImage = it.commenter.profileImage,
                     username = it.commenter.username,
                     bio = it.commenter.bio,
                     followers = it.commenter.followers,
                     following = it.commenter.following
-                ).toString()
+                )
             )
         },
         caption = caption,

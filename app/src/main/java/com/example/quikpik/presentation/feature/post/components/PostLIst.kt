@@ -13,6 +13,8 @@ fun PostList(posts: List<DetailPostModel>, onPostClick: (String) -> Unit,
              userdata: UserModel,
              onLikeClick: (String) -> Unit,   // Add this parameter
              onBookmarkClick: (String) -> Unit
+                , onFollowClick: (String) -> Unit,
+                onUnFollowClick: (String) -> Unit,
              ) {
     LazyColumn {
         items(posts.size) { post ->
@@ -22,7 +24,10 @@ fun PostList(posts: List<DetailPostModel>, onPostClick: (String) -> Unit,
                 userdata= userdata,
                 onLikeClick = onLikeClick,
                 onBookmarkClick = onBookmarkClick,
-                onPostClick = onPostClick  // Pass the post to the onPostClick callback
+                onPostClick = onPostClick
+                , onFollowClick = onFollowClick,
+                onUnFollowClick = onUnFollowClick
+            // Pass the post to the onPostClick callback
 
 
 

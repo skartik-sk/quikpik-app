@@ -35,6 +35,8 @@ fun ExploreScreen(modifier: Modifier = Modifier,
         return PostList(reversedList,userdata = meState.userData!!,
             onLikeClick = { postId -> ExploreViewModel.likePost(postId,meState.userData.id) },
             onBookmarkClick = { postId -> meViewmodel.bookmarkPost(postId) },
+            onFollowClick = { userId -> meViewmodel.follow(userId) },
+            onUnFollowClick = { userId -> meViewmodel.unfollow(userId) },
 
             onPostClick = {
                 navController.navigate(Screen.PostDetails.route+ "/${it}")

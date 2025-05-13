@@ -24,6 +24,10 @@ class AuthRepoImpl @Inject constructor(
             val data = LoginBody(username, password)
             val response = authApi.login(data)
             response.token.let { tokenManager.saveToken(token = it) }
+            if(response.message=="User already exists"){
+                emit(Resource.Error("User already exists"))
+                return@flow
+            }
             emit(Resource.Success(data=response.message))
 
         } catch (e: HttpException) {

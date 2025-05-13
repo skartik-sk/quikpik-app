@@ -27,6 +27,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +53,7 @@ import com.example.quikpik.presentation.ui.theme.UserBlue
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.AccessibleIcon
 import compose.icons.lineawesomeicons.AsteriskSolid
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -66,7 +68,33 @@ fun Signup(
     if (loginState.isLoading) {
         return CustomLoading()
     }
+// Replace the selected error handling code in Signup page
+LaunchedEffect(loginState) {
+    when {
+        loginState.error.isNotEmpty() -> {
+            showToast.value = true
+            delay(3000) // Auto-dismiss after 3 seconds
+            signupViewModel.clearState()
+        }
+        loginState.message.isNotEmpty() -> {
+            showToast.value = true
+            delay(1500) // Show success message briefly
+            navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.Signup.route) { inclusive = true }
+            }
+            signupViewModel.clearState()
+        }
+    }
+}
 
+// Display toast when needed
+if (showToast.value) {
+    CustomToast(
+        message = if (loginState.error.isNotEmpty()) loginState.error else "Signup Success",
+        isError = loginState.error.isNotEmpty(),
+        onDismiss = { showToast.value = false }
+    )
+}
 
     val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
@@ -83,8 +111,9 @@ fun Signup(
             .fillMaxWidth(1f)
             .fillMaxHeight()
     ) {
-        Text("Signup",
-            style  = MaterialTheme.typography.headlineLarge,
+        Text(
+            "Signup",
+            style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.size(16.dp))
@@ -93,7 +122,7 @@ fun Signup(
         PrimaryTextField(Icons.Default.Person, "Username", username)
 
 
-            PrimaryTextField(LineAwesomeIcons.AsteriskSolid, "Password", password)
+        PrimaryTextField(LineAwesomeIcons.AsteriskSolid, "Password", password)
 
         Spacer(modifier = Modifier.size(10.dp))
         Row {
@@ -101,7 +130,7 @@ fun Signup(
             PrimaryButton("Signup")
             {
 
-                signupViewModel.Signup(username.value,email.value, password.value)
+                signupViewModel.Signup(username.value, email.value, password.value)
 
             }
 
@@ -136,27 +165,6 @@ fun Signup(
         )
 
 
-        if (
-            loginState.error.isNotEmpty()
-        ) {
-            showToast.value = true
-            if (showToast.value) CustomToast(
-                loginState.error,
-                true,
-                onDismiss = { showToast.value = false })
-            signupViewModel.clearState()
-        } else if (
-            loginState.message.isNotEmpty()
-
-        ) {
-            showToast.value = true
-            if (showToast.value) CustomToast(
-                "Login Success",
-                false,
-                onDismiss = { showToast.value = false })
-            navController.navigate(Screen.Main.route)
-            signupViewModel.clearState()
-        }
     }
 
 }

@@ -28,6 +28,8 @@ fun HomeScreen(modifier: Modifier = Modifier,
         return PostList(reversedList,userdata = meState.userData!!,
             onLikeClick = { postId -> HomeViewModel.likePost(postId) },
             onBookmarkClick = { postId -> meViewmodel.bookmarkPost(postId) },
+            onFollowClick = { userId -> meViewmodel.follow(userId) },
+            onUnFollowClick = { userId -> meViewmodel.unfollow(userId) },
 
                     onPostClick = {  navController.navigate(Screen.PostDetails.route+ "/${it}")}
         )
